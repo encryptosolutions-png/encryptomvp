@@ -1,92 +1,28 @@
-"use client"
+'use client'
 
-import {useEffect,useState} from "react"
-import {supabase} from "@/lib/supabaseClient"
-import {useRouter} from "next/navigation"
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
 
-export default function Dashboard(){
+export default function Dashboard() {
+  const router = useRouter()
+  const [user, setUser] = useState(null)
 
-const[user,setUser]=useState(null)
-const router=useRouter()
+  useEffect(() => {
+    const session = supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) {
+        router.push('/login')
+      } else {
+        setUser(data.session.user)
+      }
+    })
+  }, [])
 
-const[message,setMessage]=useState("")
-const[result,setResult]=useState("")
+  if (!user) return <div>Loading...</div>
 
-useEffect(()=>{
-checkUser()
-},[])
-
-async function checkUser(){
-
-const{data}=await supabase.auth.getUser()
-
-if(!data.user){
-router.push("/login")
-}else{
-setUser(data.user)
-}
-
-}
-
-async function checkScam(){
-
-const res=await fetch("/api/scam-check",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({message})
-})
-
-const data=await res.json()
-
-setResult(data.result)
-
-}
-
-return(
-
-<div className="p-10">
-
-<h1 className="text-3xl font-bold">
-Dashboard
-</h1>
-
-{user && (
-<p className="mt-2">
-Welcome {user.email}
-</p>
-)}
-
-<div className="mt-8">
-
-<h2 className="text-xl font-bold">
-Scam Detector
-</h2>
-
-<textarea
-className="border w-full p-2 mt-2"
-placeholder="Paste message here"
-onChange={(e)=>setMessage(e.target.value)}
-/>
-
-<button
-onClick={checkScam}
-className="bg-red-700 text-white px-4 py-2 mt-2"
->
-Check Message
-</button>
-
-{result && (
-<p className="mt-3 font-bold">
-Result: {result}
-</p>
-)}
-
-</div>
-
-</div>
-
-)
-
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl font-bold">Welcome, {user.email}</h1>
+    </div>
+  )
 }
