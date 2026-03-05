@@ -1,59 +1,67 @@
-"use client"
+'use client'
 
-import {useState} from "react"
-import {supabase} from "@/lib/supabaseClient"
-import {useRouter} from "next/navigation"
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
 
-export default function Login(){
+export default function LoginPage() {
 
-const router=useRouter()
+  const router = useRouter()
 
-const[email,setEmail]=useState("")
-const[password,setPassword]=useState("")
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-async function login(){
+  const handleLogin = async () => {
 
-const{error}=await supabase.auth.signInWithPassword({
-email,
-password
-})
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    })
 
-if(error){
-alert(error.message)
-}else{
-router.push("/dashboard")
-}
+    if (error) {
+      alert(error.message)
+    } else {
+      router.push('/dashboard')
+    }
+  }
 
-}
+  return (
+    <div className="flex items-center justify-center h-screen">
 
-return(
+      <div className="bg-white p-8 rounded shadow w-96">
 
-<div className="p-10 max-w-md mx-auto">
+        {/* Logo Space */}
+        <div className="flex justify-center mb-6">
+          <img src="/logo.png" className="h-10" alt="EnCrypto Logo" />
+        </div>
 
-<h2 className="text-2xl font-bold">Login</h2>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Login to EnCrypto
+        </h1>
 
-<input
-className="border p-2 w-full mt-4"
-placeholder="Email"
-onChange={(e)=>setEmail(e.target.value)}
-/>
+        <input
+          type="email"
+          placeholder="Email"
+          className="border w-full p-2 mb-4"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-<input
-className="border p-2 w-full mt-4"
-type="password"
-placeholder="Password"
-onChange={(e)=>setPassword(e.target.value)}
-/>
+        <input
+          type="password"
+          placeholder="Password"
+          className="border w-full p-2 mb-4"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-<button
-onClick={login}
-className="bg-red-700 text-white px-4 py-2 mt-4"
->
-Login
-</button>
+        <button
+          onClick={handleLogin}
+          className="bg-red-600 text-white w-full p-2 rounded"
+        >
+          Login
+        </button>
 
-</div>
+      </div>
 
-)
-
+    </div>
+  )
 }
