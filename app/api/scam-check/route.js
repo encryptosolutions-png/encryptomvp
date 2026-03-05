@@ -1,42 +1,37 @@
-import { NextResponse } from "next/server"
+export async function POST(req) {
+  const body = await req.json()
+  const message = body.message.toLowerCase()
 
-export async function POST(req){
+  const highRisk = [
+    "send money",
+    "wire transfer",
+    "crypto payment",
+    "collaboration fee",
+    "guaranteed profit"
+  ]
 
-const{message}=await req.json()
+  const mediumRisk = [
+    "urgent",
+    "limited offer",
+    "verify account",
+    "click this link",
+    "investment opportunity"
+  ]
 
-const high=[
-"send money",
-"wire transfer",
-"crypto payment",
-"collaboration fee",
-"guaranteed profit"
-]
+  let matches = 0
 
-const medium=[
-"urgent",
-"limited offer",
-"verify account",
-"click this link",
-"investment opportunity"
-]
+  highRisk.forEach(word => {
+    if (message.includes(word)) matches++
+  })
 
-let matches=0
+  mediumRisk.forEach(word => {
+    if (message.includes(word)) matches++
+  })
 
-const text=message.toLowerCase()
+  let result = "Safe"
 
-high.forEach(k=>{
-if(text.includes(k)) matches++
-})
+  if (matches >= 3) result = "Scam"
+  else if (matches >= 1) result = "Suspicious"
 
-medium.forEach(k=>{
-if(text.includes(k)) matches++
-})
-
-let result="Safe"
-
-if(matches<=2 && matches>0) result="Suspicious"
-if(matches>=3) result="Scam"
-
-return NextResponse.json({result})
-
+  return Response.json({ result })
 }
